@@ -1,0 +1,48 @@
+#!/usr/bin/with-contenv bash
+
+# This is an install script that is designed to run after init-mods-package-install
+# so it can take advantage of packages installed
+# init-mods-end depends on this script so that later init and services wait until this script exits
+set -e
+
+echo "[certmod] Downloading AAA Certificate Services root (ID 331986)"
+curl -fsSL https://crt.sh/?d=331986 -o /usr/local/share/ca-certificates/aaa-certificates-331986.crt
+
+echo "[certmod] Updating trust store"
+update-ca-certificates
+
+echo "[crowdnfo] Setting up CrowdClient script directory"
+if [ -z "${SCRIPT_DIR+x}" ]; then
+    echo "Warning: SCRIPT_DIR is not set. Using default path /data/scripts."
+    SCRIPT_DIR="/data/scripts"
+fi
+
+# Beispielhafte Nutzung
+if ! [ -d "$SCRIPT_DIR" ]; then
+    echo "Directory does not exist, creating: $SCRIPT_DIR"
+    mkdir -p "$SCRIPT_DIR"
+fi
+
+echo "[crowdnfo] Downloading latest CrowdClient binary"
+ARCH=$(uname -m)
+
+case "$ARCH" in
+  x86_64)
+    ARCH_DL="amd64"
+    ;;
+  aarch64)
+    ARCH_DL="arm64"
+    ;;
+  *)
+    echo "Unsupported architecture: $ARCH"
+    exit 1
+    ;;
+esac
+
+curl -L -o $SCRIPT_DIR/crowdclient-sabnzbd-linux "https://github.com/pixelhunterX/crowdclient-sabnzbd/releases/latest/download/crowdclient-sabnzbd-linux-$ARCH_DL"
+chmod +x $SCRIPT_DIR/crowdclient-sabnzbd-linux
+echo "[crowdnfo] CrowdClient binary downloaded and made executable at $SCRIPT_DIR/crowdclient-sabnzbd-linux"
+bash $SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0'
+echo "[crowdnfo] CrowdClient test run to generate default config completed"
+echo "[crowdnfo] Please edit the config file at $SCRIPT_DIR/crowdclient-config.json"
+echo "[crowdnfo] CrowdClient setup completed!"
