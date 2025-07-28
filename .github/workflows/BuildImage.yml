@@ -11,7 +11,7 @@ on:
 
 env:
   GITHUB_REPO: "pixelhunterX/crowdclient-sabnzbd-docker-mod" #don't modify
-  ENDPOINT: "crowdclient-sabnzbd-docker-mod" #don't modify
+  ENDPOINT: "pixelhunterX/crowdclient-sabnzbd-docker-mod" #don't modify
   BASEIMAGE: "sabnzbd" #replace
   MODNAME: "crowdclient-sabnzbd-docker-mod" #replace
   MOD_VERSION: ${{ inputs.mod_version }} #don't modify
