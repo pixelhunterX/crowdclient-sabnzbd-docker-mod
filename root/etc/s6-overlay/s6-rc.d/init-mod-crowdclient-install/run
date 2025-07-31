@@ -61,7 +61,7 @@ if bash $SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' 2>&1 | grep 
     echo "[crowdnfo] Default configuration generated successfully (API key configuration required)"
 else
     # Run it anyway and ignore the exit code, as config generation is the goal
-    bash $SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' || true
+    $SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' || true
     echo "[crowdnfo] Default configuration generation completed"
 fi
 
