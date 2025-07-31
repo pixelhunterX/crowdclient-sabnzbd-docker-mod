@@ -10,6 +10,8 @@ if [ -f /usr/bin/apt ]; then
         mediainfo \
         curl \
         ca-certificates" >> /mod-repo-packages-to-install.list
+fi
+
 # Alpine
 if [ -f /sbin/apk ]; then
     echo "\
