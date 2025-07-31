@@ -54,7 +54,7 @@ esac
 curl -L -o $SCRIPT_DIR/crowdclient-sabnzbd-linux "https://github.com/pixelhunterX/crowdclient-sabnzbd/releases/latest/download/crowdclient-sabnzbd-linux-$ARCH_DL"
 chmod +x $SCRIPT_DIR/crowdclient-sabnzbd-linux
 echo "[crowdnfo] CrowdClient binary downloaded and made executable at $SCRIPT_DIR/crowdclient-sabnzbd-linux"
-bash $SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0'
+$SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0'
 echo "[crowdnfo] CrowdClient test run to generate default config completed"
 echo "[crowdnfo] Please edit the config file at $SCRIPT_DIR/crowdclient-config.json"
 echo "[crowdnfo] CrowdClient setup completed!"
