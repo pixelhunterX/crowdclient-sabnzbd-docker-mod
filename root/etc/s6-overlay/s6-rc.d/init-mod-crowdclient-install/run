@@ -70,3 +70,45 @@ fi
 
 echo "[crowdnfo] Please edit the config file at $SCRIPT_DIR/crowdclient-config.json"
 echo "[crowdnfo] CrowdClient setup completed!"
+
+# Set proper ownership for the binary
+if [ -n "${PUID:-}" ] && [ -n "${PGID:-}" ]; then
+    echo "[crowdnfo] Setting ownership to PUID:PGID ($PUID:$PGID)"
+    chown $PUID:$PGID $SCRIPT_DIR/crowdclient-sabnzbd-linux
+else
+    # Try to find a non-root user as fallback
+    if id "abc" >/dev/null 2>&1; then
+        echo "[crowdnfo] PUID/PGID not set, using 'abc' user as fallback"
+        chown abc:abc $SCRIPT_DIR/crowdclient-sabnzbd-linux
+    elif [ -n "${USER:-}" ] && [ "$USER" != "root" ] && id "$USER" >/dev/null 2>&1; then
+        echo "[crowdnfo] PUID/PGID not set, using USER environment variable: $USER"
+        chown $USER:$USER $SCRIPT_DIR/crowdclient-sabnzbd-linux
+    else
+        # Last resort: use 1000:1000 (common default user ID)
+        echo "[crowdnfo] PUID/PGID not set, using default 1000:1000"
+        chown 1000:1000 $SCRIPT_DIR/crowdclient-sabnzbd-linux 2>/dev/null || echo "[crowdnfo] Warning: Could not set ownership to 1000:1000, keeping root"
+    fi
+fi
+
+# Set proper ownership for the config file
+CONFIG_FILE="$SCRIPT_DIR/crowdclient-config.json"
+if [ -f "$CONFIG_FILE" ]; then
+    if [ -n "${PUID:-}" ] && [ -n "${PGID:-}" ]; then
+        chown $PUID:$PGID "$CONFIG_FILE"
+        echo "[crowdnfo] Set ownership of config file to PUID:PGID ($PUID:$PGID)"
+    else
+        # Use same fallback logic as for binary
+        if id "abc" >/dev/null 2>&1; then
+            chown abc:abc "$CONFIG_FILE"
+            echo "[crowdnfo] Set ownership of config file to 'abc' user"
+        elif [ -n "${USER:-}" ] && [ "$USER" != "root" ] && id "$USER" >/dev/null 2>&1; then
+            chown $USER:$USER "$CONFIG_FILE"
+            echo "[crowdnfo] Set ownership of config file to USER: $USER"
+        else
+            chown 1000:1000 "$CONFIG_FILE" 2>/dev/null || echo "[crowdnfo] Warning: Could not set config file ownership"
+            echo "[crowdnfo] Set ownership of config file to default 1000:1000"
+        fi
+    fi
+    # Ensure the config file is readable and writable
+    chmod 644 "$CONFIG_FILE"
+fi
