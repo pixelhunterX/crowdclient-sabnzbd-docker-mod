@@ -54,7 +54,16 @@ esac
 curl -L -o $SCRIPT_DIR/crowdclient-sabnzbd-linux "https://github.com/pixelhunterX/crowdclient-sabnzbd/releases/latest/download/crowdclient-sabnzbd-linux-$ARCH_DL"
 chmod +x $SCRIPT_DIR/crowdclient-sabnzbd-linux
 echo "[crowdnfo] CrowdClient binary downloaded and made executable at $SCRIPT_DIR/crowdclient-sabnzbd-linux"
-$SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0'
-echo "[crowdnfo] CrowdClient test run to generate default config completed"
+
+# Run CrowdClient to generate default config - expected to fail with config error
+echo "[crowdnfo] Running CrowdClient to generate default configuration..."
+if bash $SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' 2>&1 | grep -q "please update the API key"; then
+    echo "[crowdnfo] Default configuration generated successfully (API key configuration required)"
+else
+    # Run it anyway and ignore the exit code, as config generation is the goal
+    bash $SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' || true
+    echo "[crowdnfo] Default configuration generation completed"
+fi
+
 echo "[crowdnfo] Please edit the config file at $SCRIPT_DIR/crowdclient-config.json"
 echo "[crowdnfo] CrowdClient setup completed!"
