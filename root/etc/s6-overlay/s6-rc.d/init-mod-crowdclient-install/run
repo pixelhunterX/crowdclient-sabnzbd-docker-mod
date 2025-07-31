@@ -5,8 +5,20 @@
 # init-mods-end depends on this script so that later init and services wait until this script exits
 set -e
 
-echo "[certmod] Downloading AAA Certificate Services root (ID 331986)"
-curl -fsSL https://crt.sh/?d=331986 -o /usr/local/share/ca-certificates/aaa-certificates-331986.crt
+echo "[certmod] Downloading AAA Certificate Services root (ID 331986)"
+# Try primary download from crt.sh first
+if ! curl -fsSL --connect-timeout 20 --max-time 30 https://crt.sh/?d=331986 -o /usr/local/share/ca-certificates/aaa-certificates-331986.crt; then
+    echo "[certmod] Primary download failed, trying alternative source..."
+    # Fallback to Salesforce download
+    if ! curl -fsSL --connect-timeout 10 --max-time 30 "https://comodoca.my.salesforce.com/sfc/dist/version/download/?oid=00D1N000002Ljih&ids=0683l00000G9fLm&d=%2Fa%2F3l000000VbG0%2Fh70Hv.GWfGuD79pR_if0MtGjJFcUj.NRZS_RLqEyC_4" -o /usr/local/share/ca-certificates/aaa-certificates-331986.crt; then
+        echo "[certmod] ERROR: Both certificate downloads failed!"
+        exit 1
+    else
+        echo "[certmod] Certificate downloaded successfully from sectigo.com"
+    fi
+else
+    echo "[certmod] Certificate downloaded successfully from crt.sh"
+fi
 
 echo "[certmod] Updating trust store"
 update-ca-certificates
