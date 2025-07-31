@@ -27,6 +27,9 @@ echo "[crowdnfo] Setting up CrowdClient script directory"
 if [ -z "${SCRIPT_DIR+x}" ]; then
     echo "Warning: SCRIPT_DIR is not set. Using default path /data/scripts."
     SCRIPT_DIR="/data/scripts"
+else
+    # Remove quotes from SCRIPT_DIR if present (both single and double quotes)
+    SCRIPT_DIR=$(echo "$SCRIPT_DIR" | sed "s/^[\"']//;s/[\"']$//")
 fi
 
 # Beispielhafte Nutzung
@@ -57,7 +60,7 @@ echo "[crowdnfo] CrowdClient binary downloaded and made executable at $SCRIPT_DI
 
 # Run CrowdClient to generate default config - expected to fail with config error
 echo "[crowdnfo] Running CrowdClient to generate default configuration..."
-if bash $SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' 2>&1 | grep -q "please update the API key"; then
+if $SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' 2>&1 | grep -q "please update the API key"; then
     echo "[crowdnfo] Default configuration generated successfully (API key configuration required)"
 else
     # Run it anyway and ignore the exit code, as config generation is the goal
