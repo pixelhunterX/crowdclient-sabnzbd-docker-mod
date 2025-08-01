@@ -56,7 +56,7 @@ if [ -f "$SCRIPT_DIR/crowdclient-config.json" ]; then
     echo "[crowdnfo] Skipping default config generation, crowdclient-config.json already exists."
 else
     echo "[crowdnfo] Running CrowdClient to generate default configuration..."
-    output=$($SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' 2>&1)
+    output=$($SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' 2>&1 || true)
     if echo "$output" | grep -q "please update the API key"; then
         echo "[crowdnfo] Default configuration generated successfully (API key configuration required)"
     else
