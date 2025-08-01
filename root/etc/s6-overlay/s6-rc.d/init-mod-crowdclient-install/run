@@ -50,16 +50,21 @@ chmod +x $SCRIPT_DIR/crowdclient-sabnzbd-linux
 echo "[crowdnfo] CrowdClient binary downloaded and made executable at $SCRIPT_DIR/crowdclient-sabnzbd-linux"
 
 # Run CrowdClient to generate default config - expected to fail with config error
-echo "[crowdnfo] Running CrowdClient to generate default configuration..."
-if $SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' 2>&1 | grep -q "please update the API key"; then
-    echo "[crowdnfo] Default configuration generated successfully (API key configuration required)"
-else
-    # Run it anyway and ignore the exit code, as config generation is the goal
-    $SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' || true
-    echo "[crowdnfo] Default configuration generation completed"
-fi
+#!/usr/bin/env bash
 
-echo "[crowdnfo] Please edit the config file at $SCRIPT_DIR/crowdclient-config.json"
+if [ -f "$SCRIPT_DIR/crowdclient-config.json" ]; then
+    echo "[crowdnfo] Skipping default config generation, crowdclient-config.json already exists."
+else
+    echo "[crowdnfo] Running CrowdClient to generate default configuration..."
+    output=$($SCRIPT_DIR/crowdclient-sabnzbd-linux '' '' '' '' '' '' '0' 2>&1)
+    if echo "$output" | grep -q "please update the API key"; then
+        echo "[crowdnfo] Default configuration generated successfully (API key configuration required)"
+    else
+        echo "$output"
+        echo "[crowdnfo] Default configuration generation completed"
+        echo "[crowdnfo] Please edit the config file at $SCRIPT_DIR/crowdclient-config.json"
+    fi
+fi
 
 # Set proper ownership for the binary
 if [ -n "${PUID:-}" ] && [ -n "${PGID:-}" ]; then
